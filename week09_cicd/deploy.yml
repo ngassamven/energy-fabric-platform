@@ -1,0 +1,23 @@
+name: deploy
+on:
+  push:
+    branches: [dev, test, main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install fabric-cicd azure-identity
+      - name: Deploy to Fabric
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          WORKSPACE_ID: ${{ vars.WORKSPACE_ID }}
+          ENVIRONMENT: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+        run: python week09_cicd/deploy_fabric.py

@@ -1,0 +1,24 @@
+// Requêtes KQL sur la table SensorReadings de l'Eventhouse
+
+// Dernières mesures par site
+SensorReadings
+| summarize arg_max(ts, power_mw) by site
+
+// Moyenne par minute sur la dernière heure
+SensorReadings
+| where ts > ago(1h)
+| summarize avg_mw = avg(power_mw) by site, bin(ts, 1m)
+| render timechart
+
+// Détection d'anomalies (valeur > moyenne + 3 écarts-types)
+SensorReadings
+| where ts > ago(1d)
+| summarize avg_mw = avg(power_mw), sd = stdev(power_mw) by site
+| join kind=inner (SensorReadings | where ts > ago(5m)) on site
+| where power_mw > avg_mw + 3 * sd
+| project ts, site, power_mw, avg_mw, sd
+
+// Silence d'un capteur (aucune donnée depuis 5 min)
+SensorReadings
+| summarize last_seen = max(ts) by site
+| where last_seen < ago(5m)

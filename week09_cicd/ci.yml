@@ -1,0 +1,18 @@
+name: ci
+on:
+  pull_request:
+    branches: [dev, test, main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff sqlfluff
+      - name: Lint Python
+        run: ruff check .
+      - name: Lint SQL
+        run: sqlfluff lint --dialect sparksql week06_gold/
