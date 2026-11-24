@@ -1,18 +1,29 @@
+
 name: deploy
+
 on:
   push:
     branches: [dev, test, main]
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install fabric-cicd azure-identity
+
+      - name: Install dependencies
+        run: pip install fabric-cicd azure-identity
+
       - name: Deploy to Fabric
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
