@@ -2,7 +2,9 @@
 
 Plateforme data de bout en bout sur **Microsoft Fabric** : production et consommation électrique en France (RTE éco2mix), météo (Open-Meteo) et flux temps réel simulé.
 
-## Architecture
+## 🏗️ Architecture globale de la plateforme
+
+![Architecture Energy Fabric Platform](docs/architecture.png)
 
 ```
 Sources (API ODRE/RTE, Open-Meteo, capteurs simulés)
